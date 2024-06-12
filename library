@@ -481,8 +481,8 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 	WindowConfig.IntroText = WindowConfig.IntroText or "Hack2Win Hub"
 	WindowConfig.CloseCallback = WindowConfig.CloseCallback or function() end
 	WindowConfig.ShowIcon = WindowConfig.ShowIcon or false
-	WindowConfig.Icon = WindowConfig.Icon or "rbxassetid://8834748103"
-	WindowConfig.IntroIcon = WindowConfig.IntroIcon or "rbxassetid://8834748103"
+	WindowConfig.Icon = WindowConfig.Icon or "rbxassetid://17828670117"
+	WindowConfig.IntroIcon = WindowConfig.IntroIcon or "rbxassetid://17828670117"
 	Hack2WinLib.Folder = WindowConfig.ConfigFolder
 	Hack2WinLib.SaveCfg = WindowConfig.SaveConfig
 
