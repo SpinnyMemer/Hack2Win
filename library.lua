@@ -7,7 +7,7 @@ local LocalPlayer = game:GetService("Players").LocalPlayer
 local Mouse = LocalPlayer:GetMouse()
 local HttpService = game:GetService("HttpService")
 
-local Hack2WinLib = {
+local GravityHub = {
 	Elements = {},
 	ThemeObjects = {},
 	Connections = {},
@@ -35,7 +35,7 @@ local Success, Response = pcall(function()
 end)
 
 if not Success then
-	warn("\nHack2Win Hub - Failed to load Feather Icons. Error code: " .. Response .. "\n")
+	warn("\nGravity Hub - Failed to load Feather Icons. Error code: " .. Response .. "\n")
 end	
 
 local function GetIcon(IconName)
@@ -46,53 +46,53 @@ local function GetIcon(IconName)
 	end
 end   
 
-local Hack2Win = Instance.new("ScreenGui")
-Hack2Win.Name = "Hack2Win"
+local Gravity = Instance.new("ScreenGui")
+Gravity.Name = "Gravity"
 if syn then
-	syn.protect_gui(Hack2Win)
-	Hack2Win.Parent = game.CoreGui
+	syn.protect_gui(Gravity)
+	Gravity.Parent = game.CoreGui
 else
-	Hack2Win.Parent = gethui() or game.CoreGui
+	Gravity.Parent = gethui() or game.CoreGui
 end
 
 if gethui then
 	for _, Interface in ipairs(gethui():GetChildren()) do
-		if Interface.Name == Hack2Win.Name and Interface ~= Hack2Win then
+		if Interface.Name == Gravity.Name and Interface ~= Gravity then
 			Interface:Destroy()
 		end
 	end
 else
 	for _, Interface in ipairs(game.CoreGui:GetChildren()) do
-		if Interface.Name == Hack2Win.Name and Interface ~= Hack2Win then
+		if Interface.Name == Gravity.Name and Interface ~= Gravity then
 			Interface:Destroy()
 		end
 	end
 end
 
-function Hack2WinLib:IsRunning()
+function GravityHub:IsRunning()
 	if gethui then
-		return Hack2Win.Parent == gethui()
+		return Gravity.Parent == gethui()
 	else
-		return Hack2Win.Parent == game:GetService("CoreGui")
+		return Gravity.Parent == game:GetService("CoreGui")
 	end
 
 end
 
 local function AddConnection(Signal, Function)
-	if (not Hack2WinLib:IsRunning()) then
+	if (not GravityHub:IsRunning()) then
 		return
 	end
 	local SignalConnect = Signal:Connect(Function)
-	table.insert(Hack2WinLib.Connections, SignalConnect)
+	table.insert(GravityHub.Connections, SignalConnect)
 	return SignalConnect
 end
 
 task.spawn(function()
-	while (Hack2WinLib:IsRunning()) do
+	while (GravityHub:IsRunning()) do
 		wait()
 	end
 
-	for _, Connection in next, Hack2WinLib.Connections do
+	for _, Connection in next, GravityHub.Connections do
 		Connection:Disconnect()
 	end
 end)
@@ -140,13 +140,13 @@ local function Create(Name, Properties, Children)
 end
 
 local function CreateElement(ElementName, ElementFunction)
-	Hack2WinLib.Elements[ElementName] = function(...)
+	GravityHub.Elements[ElementName] = function(...)
 		return ElementFunction(...)
 	end
 end
 
 local function MakeElement(ElementName, ...)
-	local NewElement = Hack2WinLib.Elements[ElementName](...)
+	local NewElement = GravityHub.Elements[ElementName](...)
 	return NewElement
 end
 
@@ -189,18 +189,18 @@ local function ReturnProperty(Object)
 end
 
 local function AddThemeObject(Object, Type)
-	if not Hack2WinLib.ThemeObjects[Type] then
-		Hack2WinLib.ThemeObjects[Type] = {}
+	if not GravityHub.ThemeObjects[Type] then
+		GravityHub.ThemeObjects[Type] = {}
 	end    
-	table.insert(Hack2WinLib.ThemeObjects[Type], Object)
-	Object[ReturnProperty(Object)] = Hack2WinLib.Themes[Hack2WinLib.SelectedTheme][Type]
+	table.insert(GravityHub.ThemeObjects[Type], Object)
+	Object[ReturnProperty(Object)] = GravityHub.Themes[GravityHub.SelectedTheme][Type]
 	return Object
 end    
 
 local function SetTheme()
-	for Name, Type in pairs(Hack2WinLib.ThemeObjects) do
+	for Name, Type in pairs(GravityHub.ThemeObjects) do
 		for _, Object in pairs(Type) do
-			Object[ReturnProperty(Object)] = Hack2WinLib.Themes[Hack2WinLib.SelectedTheme][Name]
+			Object[ReturnProperty(Object)] = GravityHub.Themes[GravityHub.SelectedTheme][Name]
 		end    
 	end    
 end
@@ -216,23 +216,23 @@ end
 local function LoadCfg(Config)
 	local Data = HttpService:JSONDecode(Config)
 	table.foreach(Data, function(a,b)
-		if Hack2WinLib.Flags[a] then
+		if GravityHub.Flags[a] then
 			spawn(function() 
-				if Hack2WinLib.Flags[a].Type == "Colorpicker" then
-					Hack2WinLib.Flags[a]:Set(UnpackColor(b))
+				if GravityHub.Flags[a].Type == "Colorpicker" then
+					GravityHub.Flags[a]:Set(UnpackColor(b))
 				else
-					Hack2WinLib.Flags[a]:Set(b)
+					GravityHub.Flags[a]:Set(b)
 				end    
 			end)
 		else
-			warn("Hack2Win Hub Config Loader - Could not find ", a ,b)
+			warn("Gravity Hub Config Loader - Could not find ", a ,b)
 		end
 	end)
 end
 
 local function SaveCfg(Name)
 	local Data = {}
-	for i,v in pairs(Hack2WinLib.Flags) do
+	for i,v in pairs(GravityHub.Flags) do
 		if v.Save then
 			if v.Type == "Colorpicker" then
 				Data[i] = PackColor(v.Value)
@@ -241,7 +241,7 @@ local function SaveCfg(Name)
 			end
 		end	
 	end
-	writefile(Hack2WinLib.Folder .. "/" .. Name .. ".txt", tostring(HttpService:JSONEncode(Data)))
+	writefile(GravityHub.Folder .. "/" .. Name .. ".txt", tostring(HttpService:JSONEncode(Data)))
 end
 
 local WhitelistedMouse = {Enum.UserInputType.MouseButton1, Enum.UserInputType.MouseButton2,Enum.UserInputType.MouseButton3}
@@ -385,10 +385,10 @@ local NotificationHolder = SetProps(SetChildren(MakeElement("TFrame"), {
 	Position = UDim2.new(1, -25, 1, -25),
 	Size = UDim2.new(0, 300, 1, -25),
 	AnchorPoint = Vector2.new(1, 1),
-	Parent = Hack2Win
+	Parent = Gravity
 })
 
-function Hack2WinLib:MakeNotification(NotificationConfig)
+function GravityHub:MakeNotification(NotificationConfig)
 	spawn(function()
 		NotificationConfig.Name = NotificationConfig.Name or "Notification"
 		NotificationConfig.Content = NotificationConfig.Content or "Test"
@@ -449,12 +449,12 @@ function Hack2WinLib:MakeNotification(NotificationConfig)
 	end)
 end    
 
-function Hack2WinLib:Init()
-	if Hack2WinLib.SaveCfg then	
+function GravityHub:Init()
+	if GravityHub.SaveCfg then	
 		pcall(function()
-			if isfile(Hack2WinLib.Folder .. "/" .. game.GameId .. ".txt") then
-				LoadCfg(readfile(Hack2WinLib.Folder .. "/" .. game.GameId .. ".txt"))
-				Hack2WinLib:MakeNotification({
+			if isfile(GravityHub.Folder .. "/" .. game.GameId .. ".txt") then
+				LoadCfg(readfile(GravityHub.Folder .. "/" .. game.GameId .. ".txt"))
+				GravityHub:MakeNotification({
 					Name = "Configuration",
 					Content = "Auto-loaded configuration for the game " .. game.GameId .. ".",
 					Time = 5
@@ -464,27 +464,27 @@ function Hack2WinLib:Init()
 	end	
 end	
 
-function Hack2WinLib:MakeWindow(WindowConfig)
+function GravityHub:MakeWindow(WindowConfig)
 	local FirstTab = true
 	local Minimized = false
 	local Loaded = false
 	local UIHidden = false
 
 	WindowConfig = WindowConfig or {}
-	WindowConfig.Name = WindowConfig.Name or "Hack2Win Hub"
+	WindowConfig.Name = WindowConfig.Name or "Gravity Hub"
 	WindowConfig.ConfigFolder = WindowConfig.ConfigFolder or WindowConfig.Name
 	WindowConfig.SaveConfig = WindowConfig.SaveConfig or false
 	WindowConfig.HidePremium = WindowConfig.HidePremium or false
 	if WindowConfig.IntroEnabled == nil then
 		WindowConfig.IntroEnabled = true
 	end
-	WindowConfig.IntroText = WindowConfig.IntroText or "Hack2Win Hub"
+	WindowConfig.IntroText = WindowConfig.IntroText or "Gravity Hub"
 	WindowConfig.CloseCallback = WindowConfig.CloseCallback or function() end
 	WindowConfig.ShowIcon = WindowConfig.ShowIcon or false
 	WindowConfig.Icon = WindowConfig.Icon or "rbxassetid://8834748103"
 	WindowConfig.IntroIcon = WindowConfig.IntroIcon or "rbxassetid://8834748103"
-	Hack2WinLib.Folder = WindowConfig.ConfigFolder
-	Hack2WinLib.SaveCfg = WindowConfig.SaveConfig
+	GravityHub.Folder = WindowConfig.ConfigFolder
+	GravityHub.SaveCfg = WindowConfig.SaveConfig
 
 	if WindowConfig.SaveConfig then
 		if not isfolder(WindowConfig.ConfigFolder) then
@@ -601,7 +601,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 	}), "Stroke")
 
 	local MainWindow = AddThemeObject(SetChildren(SetProps(MakeElement("RoundFrame", Color3.fromRGB(255, 255, 255), 0, 10), {
-		Parent = Hack2Win,
+		Parent = Gravity,
 		Position = UDim2.new(0.5, -307, 0.5, -172),
 		Size = UDim2.new(0, 615, 0, 344),
 		ClipsDescendants = true
@@ -650,7 +650,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 	AddConnection(CloseBtn.MouseButton1Up, function()
 		MainWindow.Visible = false
 		UIHidden = true
-		Hack2WinLib:MakeNotification({
+		GravityHub:MakeNotification({
 			Name = "Interface Hidden",
 			Content = "Tap RightShift to reopen the interface",
 			Time = 5
@@ -687,7 +687,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 	local function LoadSequence()
 		MainWindow.Visible = false
 		local LoadSequenceLogo = SetProps(MakeElement("Image", WindowConfig.IntroIcon), {
-			Parent = Hack2Win,
+			Parent = Gravity,
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.new(0.5, 0, 0.4, 0),
 			Size = UDim2.new(0, 28, 0, 28),
@@ -696,7 +696,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 		})
 
 		local LoadSequenceText = SetProps(MakeElement("Label", WindowConfig.IntroText, 14), {
-			Parent = Hack2Win,
+			Parent = Gravity,
 			Size = UDim2.new(1, 0, 1, 0),
 			AnchorPoint = Vector2.new(0.5, 0.5),
 			Position = UDim2.new(0.5, 19, 0.5, 0),
@@ -886,22 +886,22 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 				}), "Second")
 
 				AddConnection(Click.MouseEnter, function()
-					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = GravityHub.Themes[GravityHub.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 					spawn(function()
 						ButtonConfig.Callback()
 					end)
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(ButtonFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 
 				function Button:Set(ButtonText)
@@ -961,8 +961,8 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 
 				function Toggle:Set(Value)
 					Toggle.Value = Value
-					TweenService:Create(ToggleBox, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Toggle.Value and ToggleConfig.Color or Hack2WinLib.Themes.Default.Divider}):Play()
-					TweenService:Create(ToggleBox.Stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Toggle.Value and ToggleConfig.Color or Hack2WinLib.Themes.Default.Stroke}):Play()
+					TweenService:Create(ToggleBox, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Toggle.Value and ToggleConfig.Color or GravityHub.Themes.Default.Divider}):Play()
+					TweenService:Create(ToggleBox.Stroke, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {Color = Toggle.Value and ToggleConfig.Color or GravityHub.Themes.Default.Stroke}):Play()
 					TweenService:Create(ToggleBox.Ico, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {ImageTransparency = Toggle.Value and 0 or 1, Size = Toggle.Value and UDim2.new(0, 20, 0, 20) or UDim2.new(0, 8, 0, 8)}):Play()
 					ToggleConfig.Callback(Toggle.Value)
 				end    
@@ -970,25 +970,25 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 				Toggle:Set(Toggle.Value)
 
 				AddConnection(Click.MouseEnter, function()
-					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = GravityHub.Themes[GravityHub.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 					SaveCfg(game.GameId)
 					Toggle:Set(not Toggle.Value)
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(ToggleFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 
 				if ToggleConfig.Flag then
-					Hack2WinLib.Flags[ToggleConfig.Flag] = Toggle
+					GravityHub.Flags[ToggleConfig.Flag] = Toggle
 				end	
 				return Toggle
 			end  
@@ -1083,7 +1083,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 
 				Slider:Set(Slider.Value)
 				if SliderConfig.Flag then				
-					Hack2WinLib.Flags[SliderConfig.Flag] = Slider
+					GravityHub.Flags[SliderConfig.Flag] = Slider
 				end
 				return Slider
 			end  
@@ -1238,7 +1238,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 				Dropdown:Refresh(Dropdown.Options, false)
 				Dropdown:Set(Dropdown.Value)
 				if DropdownConfig.Flag then				
-					Hack2WinLib.Flags[DropdownConfig.Flag] = Dropdown
+					GravityHub.Flags[DropdownConfig.Flag] = Dropdown
 				end
 				return Dropdown
 			end
@@ -1336,19 +1336,19 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 				end)
 
 				AddConnection(Click.MouseEnter, function()
-					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = GravityHub.Themes[GravityHub.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(BindFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 
 				function Bind:Set(Key)
@@ -1360,7 +1360,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 
 				Bind:Set(BindConfig.Default)
 				if BindConfig.Flag then				
-					Hack2WinLib.Flags[BindConfig.Flag] = Bind
+					GravityHub.Flags[BindConfig.Flag] = Bind
 				end
 				return Bind
 			end  
@@ -1427,20 +1427,20 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 				TextboxActual.Text = TextboxConfig.Default
 
 				AddConnection(Click.MouseEnter, function()
-					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 				end)
 
 				AddConnection(Click.MouseLeave, function()
-					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = GravityHub.Themes[GravityHub.SelectedTheme].Second}):Play()
 				end)
 
 				AddConnection(Click.MouseButton1Up, function()
-					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 3, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 3)}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 3, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 3)}):Play()
 					TextboxActual:CaptureFocus()
 				end)
 
 				AddConnection(Click.MouseButton1Down, function()
-					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.R * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.G * 255 + 6, Hack2WinLib.Themes[Hack2WinLib.SelectedTheme].Second.B * 255 + 6)}):Play()
+					TweenService:Create(TextboxFrame, TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {BackgroundColor3 = Color3.fromRGB(GravityHub.Themes[GravityHub.SelectedTheme].Second.R * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.G * 255 + 6, GravityHub.Themes[GravityHub.SelectedTheme].Second.B * 255 + 6)}):Play()
 				end)
 			end 
 			function ElementFunction:AddColorpicker(ColorpickerConfig)
@@ -1624,7 +1624,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 
 				Colorpicker:Set(Colorpicker.Value)
 				if ColorpickerConfig.Flag then				
-					Hack2WinLib.Flags[ColorpickerConfig.Flag] = Colorpicker
+					GravityHub.Flags[ColorpickerConfig.Flag] = Colorpicker
 				end
 				return Colorpicker
 			end  
@@ -1729,7 +1729,7 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 	--				})
 	--			})
 	--		end
-	--		Hack2WinLib:MakeNotification({
+	--		GravityHub:MakeNotification({
 	--			Name = "UI Library Available",
 	--			Content = "New UI Library Available - Joining Discord (#announcements)",
 	--			Time = 8
@@ -1759,8 +1759,8 @@ function Hack2WinLib:MakeWindow(WindowConfig)
 	return TabFunction
 end   
 
-function Hack2WinLib:Destroy()
-	Hack2Win:Destroy()
+function GravityHub:Destroy()
+	Gravity:Destroy()
 end
 
-return Hack2WinLib
+return GravityHub
